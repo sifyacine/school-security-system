@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Add student</title>
+	<link rel="stylesheet" href="{% static 'add_student.css'%}">
+</head>
+<body>
+	<header>
+		<div class="container">
+			<h1 class="logo">Add Student</h1>
+			<nav class="header__nav">
+				<ul>
+					<li><a href="{% url 'home' %}" class="btn">Home</a></li>
+					<li><a href="{% url 'dashboard_home' %}" class="btn">Dashboard</a></li>
+					<li><a href="{% url 'attendance' %}" class="btn">live attendance</a></li>
+					<li><a href="{% url 'staff' %}" class="btn">Add Staff</a></li>
+					<li><a href="{% url 'staff_reports' %}" class="btn">Staff Reporting</a></li>
+					<li><a href="{% url 'student_reports' %}" class="btn">Student Reporting</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+	<main>
+		<div class="main-container">
+				<h2>Personal Information</h2>
+				<form method="post">
+					{% csrf_token %}
+					{{ form.as_p }}
+					<input type="submit" value="Submit">
+				</form>
+				{% comment %} <form method="post" action="{% url 'encode_images' %}">
+					{% csrf_token %}
+					<button type="submit">Encode images</button>
+				</form> {% endcomment %}
+		</div>
+	</main>
+</body>
+</html>

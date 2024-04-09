@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Principal Dashboard</title>
+	<link rel="stylesheet" href="{% static 'dashboard.css'%}">
+</head>
+<body>
+	<header class="header">
+		<div class="container">
+			<h1 class="logo">Principal Dashboard</h1>
+			<nav class="header__nav">
+				<ul>
+					<li><a href="{% url 'home' %}" class="btn">Home</a></li>
+					<li><a href="{% url 'staff' %}" class="btn">Add Staff</a></li>
+					<li><a href="{% url 'student' %}" class="btn">Add Students</a></li>
+					<li><a href="{% url 'student_reports' %}" class="btn">Student Report</a></li>
+					<li><a href="{% url 'staff_reports' %}" class="btn">Staff Report</a></li>
+					<li><a href="{% url 'attendance' %}" class="btn">Live Attendance</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+	<main class="main">
+		<section class="section">
+			<h2 class="heading-secondary">Students Table</h2>
+			<div style="display: flex;">
+				<form method="GET" action="{% url 'student_table' %}">
+					<input type="text" name="query" placeholder="Search..." value="{{ query }}" required>
+					<button type="submit" >Search</button>
+				</form>
+				<form method="GET" action="{% url 'dashboard_home' %}">
+					<button type="submit" >refresh</button>
+				</form>
+			</div> 
+			{% if message %}
+				<p>{{ message }}</p>
+			{% else %}
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Number</th>
+						<th>Fatther Full Name</th>
+						<th>Full Name</th>
+						<th>ID Card Number</th>
+						<th>Parents Email Address</th>
+						<th>Address</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for student in student_data %}
+					<tr data-fullname="{{ student.full_name }}" data-card="{{ student.card_id }}" data-number="{{ student.number }}" onclick="location.href='{% url 'encode_images' %}?card={{ student.card_id}}&is_staff={{ student.is_staff }}';" style="cursor:pointer">
+						<td>{{ student.number }}</td>
+						<td>{{ student.father_full_name }}</td>
+						<td>{{ student.full_name }}</td>
+						<td>{{ student.card_id }}</td>
+						<td>{{ student.parents_email }}</td>
+						<td>{{ student.address }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+      {% endif %}
+	  <section class="section">
+		<h2 class="heading-secondary">Staff Table</h2>
+		{% if message %}
+			<p>{{ message }}</p>
+		{% else %}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Number</th>
+					<th>Full Name</th>
+					<th>ID Card Number</th>
+					<th>Email Address</th>
+					<th>Address</th>
+					<th>Gender</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for staff in staff_data %}
+				<tr data-fullname="{{ staff.full_name }}" data-card="{{ staff.card_id }}" data-number="{{ staff.number }}" onclick="location.href='{% url 'encode_images' %}?card={{ staff.card_id}}&is_staff={{ staff.is_staff }}';" style="cursor:pointer">
+					<td>{{ staff.number }}</td>
+					<td>{{ staff.full_name }}</td>
+					<td>{{ staff.card_id }}</td>
+					<td>{{ staff.staff_email }}</td>
+					<td>{{ staff.address }}</td>
+					<td>{{ staff.gender }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% endif %}
+	</section>
+	</main>
+	<footer class="footer">
+		<div class="container">
+			<p>&copy; 2023 School Name</p>
+		</div>
+	</footer>
+
+</body>
+</html>

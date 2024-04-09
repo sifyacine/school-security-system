@@ -1,0 +1,20 @@
+As it is shown in the folder this is a complete website for school security system built in march 2023 
+
+
+in this site we have some features to show 
+the main feature is the attendance using face recognition and rfid card 
+where the student must enter with face recognition so we register his entrence time 
+and then when he tries to leave he leave using rfid card after scanning it the time of leaving is registered as well 
+also there is amount of ppl who can add or remove students from the data base which can be controlled 
+by the administration of the school
+
+the technologies used to achieve this:
+python django for the backend 
+node js react for the frotend
+face recognition library from python libraries
+arduino, rfid reader and card 
+for the data base i used only mvc the django provides
+
+
+
+ 

@@ -1,0 +1,4 @@
+this folder is the concept i used to apply the face recognition in my site 
+i used library of python called face recognition that encodes images 
+and then compare between the encoded ones in the data base
+and then prints the results if there is matching or no matching 

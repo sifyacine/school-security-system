@@ -1,0 +1,123 @@
+import cv2
+import os
+import face_recognition
+
+known_face_encodings = []
+known_face_names = []
+
+for filename in os.listdir("encodingsdb"):
+    name = filename.split(".")[0]
+    known_face_encodings.append(face_recognition.load_encoding_file(f"encodingsdb/{filename}"))
+    known_face_names.append(name)
+
+    video_capture = cv2.VideoCapture(0)
+while True:
+    # Grab a single frame of video
+    ret, frame = video_capture.read()
+
+    # Convert the image from [BGR color](poe://www.poe.com/_api/key_phrase?phrase=BGR%20color&prompt=Tell%20me%20more%20about%20BGR%20color.) (which [OpenCV](poe://www.poe.com/_api/key_phrase?phrase=OpenCV&prompt=Tell%20me%20more%20about%20OpenCV.) uses) to [RGB color](poe://www.poe.com/_api/key_phrase?phrase=RGB%20color&prompt=Tell%20me%20more%20about%20RGB%20color.) (which face_recognition uses)
+    rgb_frame = frame[:, :, ::-1]
+
+    # Find all the faces and [face encodings](poe://www.poe.com/_api/key_phrase?phrase=face%20encodings&prompt=Tell%20me%20more%20about%20face%20encodings.) in the current frame of video
+    face_locations = face_recognition.face_locations(rgb_frame) 
+    face_encodings = face_recognition.face_encodings(rgb_frame, face_locations) 
+
+    # Loop through each face in this frame of video 
+    for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+    # See if the face is a match for the known face(s)
+        matches = face_recognition.compare_faces(known_face_encodings, face_encoding) 
+
+        name = "Unknown"
+
+        # If a match was found in known_face_encodings, just use the first one.
+        if True in matches: 
+            first_match_index = matches.index(True) 
+            name = known_face_names[first_match_index] 
+
+        # Draw a box around the face
+        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2) 
+
+        # Draw a label with a name below the face
+        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED) 
+        font = cv2.FONT_HERSHEY_DUPLEX
+        cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1) 
+
+    # Display the resulting image
+    cv2.imshow('Video', frame) 
+
+    # Hit 'q' on the keyboard to quit!
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break        
+video_capture.release()
+cv2.destroyAllWindows()
+
+
+
+
+
+
+
+
+import cv2
+import os
+import face_recognition
+import numpy as np
+
+def capture_image():
+    cap = cv2.VideoCapture(0)
+
+    while True:
+        ret, frame = cap.read()
+        cv2.imshow('Press "C" to capture image', frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('c'):
+            cv2.imwrite('captured_image.jpg', frame)
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+def encode_image(image_path):
+    image = face_recognition.load_image_file(image_path)
+    encodings = face_recognition.face_encodings(image)
+
+    if len(encodings) > 0:
+        return encodings[0]
+    else:
+        return None
+
+def compare_encodings(encoding, encodings_folder):
+    for filename in os.listdir(encodings_folder):
+        try:
+            known_encodings = np.load(os.path.join(encodings_folder, filename))
+            matches = face_recognition.compare_faces(known_encodings, encoding)
+
+            if any(matches):
+                return filename[:-4]  # Remove file extension
+
+        except Exception as e:
+            print(f"Error loading {filename}: {e}")
+
+    return None
+
+def main():
+    encodings_folder = 'encodings'
+    encodingsbd_folder = 'encodingsdb'
+
+    while True:
+        capture_image()
+        encoding = encode_image('captured_image.jpg')
+
+        if encoding is not None:
+            np.save(os.path.join(encodings_folder, 'current_encoding.npy'), encoding)
+            match = compare_encodings(encoding, encodingsbd_folder)
+
+            if match:
+                print(f"Match found: {match}")
+            else:
+                print("No matches")
+        else:
+            print("No face detected in the captured image")
+
+if __name__ == '__main__':
+    main()

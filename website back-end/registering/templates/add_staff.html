@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Add Staff</title>
+	<link rel="stylesheet" href="{% static 'add_staff.css' %}">
+</head>
+<body>
+	<header class="header">
+		<div class="container">
+			<h1 class="logo">Add staff</h1>
+			<nav class="header__nav">
+				<ul>
+					<li><a href="{% url 'home' %}" class="btn">Home</a></li>
+					<li><a href="{% url 'dashboard_home' %}" class="btn">Dashboard</a></li>
+					<li><a href="{% url 'attendance' %}" class="btn">live attendance</a></li>
+					<li><a href="{% url 'student' %}" class="btn">Add Student</a></li>
+					<li><a href="{% url 'staff_reports' %}" class="btn">Staff Reporting</a></li>
+					<li><a href="{% url 'student_reports' %}" class="btn">Student Reporting</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+	<main class="main">
+		<div class="main-container">
+			<div class="signup-container">
+					<h2>Personal Information</h2>
+					<form method="POST">
+						{% csrf_token %}
+						{{ form.as_p }}
+					<input type="submit" value="Submit">
+					</form>
+			</div>
+		</div>
+	</main>
+</body>
+</html>

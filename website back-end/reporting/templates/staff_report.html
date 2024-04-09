@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Report Page</title>
+  <link rel="stylesheet" href="{% static 'staff_report.css'%}">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <h1 class="logo">Staff Report</h1>
+      <nav class="header__nav">
+        <ul>
+          <li><a href="{% url 'home' %}" class="btn">Home</a></li>
+          <li><a href="{% url 'dashboard_home' %}" class="btn">dashboard</a></li>
+          <li><a href="{% url 'staff' %}" class="btn">Add Staff</a></li>
+          <li><a href="{% url 'student' %}" class="btn">Add student</a></li>
+          <li><a href="{% url 'student_reports' %}" class="btn">Student Report</a></li>
+          <li><a href="{% url 'attendance' %}" class="btn">Live Attendance</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <form method="POST" class = "form" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+      <input type="submit" value="Submit">
+    </div>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2023 School Name</p>
+    </div>
+  </footer>
+</body>
+</html>

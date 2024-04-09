@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'encode_image.css' %}">
+    <title>Encode Images</title>
+</head>
+<body>
+<h1>Encode Images</h1>
+
+{% if messages %}
+  {% for message in messages %}
+    <p style="color: red">{{ message }}</p>
+  {% endfor %}
+{% endif %}
+
+<form id="encode-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h2>Upload Image:</h2>
+    <input type="hidden" id="image-data" name="image_data" value="{{ image_data }}">
+    <button id="capture-button" type="button">Capture Image</button>
+    <input type="file" id="image-upload" name="image_upload" accept="image/*" style="display:none;">
+    <button id="select-button" type="button">Select Image</button>
+    <div id="preview-container"></div>
+    <button type="submit">Encode Image</button>
+</form>
+
+<script>
+    // Get references to the DOM elements
+    const captureButton = document.getElementById('capture-button');
+    const selectButton = document.getElementById('select-button');
+    const imageUpload = document.getElementById('image-upload');
+    const previewContainer = document.getElementById('preview-container');
+    const imageDataInput = document.getElementById('image-data');
+
+    // Add an event listener to the capture button
+    captureButton.addEventListener('click', () => {
+        // Use the device camera to capture an image
+        navigator.mediaDevices.getUserMedia({video: true})
+            .then((stream) => {
+                // Create a video element to display the stream
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.autoplay = true;
+                video.onloadedmetadata = () => {
+                    // Create a canvas element to capture the image
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    // Draw the video frame onto the canvas
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    // Convert the canvas to a data URL and display the preview
+                    const dataURL = canvas.toDataURL('image/jpeg');
+                    const previewImage = document.createElement('img');
+                    previewImage.src = dataURL;
+                    previewContainer.innerHTML = '';
+                    previewContainer.appendChild(previewImage);
+                    // Set the image data in the hidden input field
+                    imageDataInput.value = dataURL;
+                    // Clean up the stream and video elements
+                    stream.getTracks().forEach((track) => {
+                        track.stop();
+                    });
+                    video.remove();
+                };
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    });
+
+    // Add an event listener to the select button
+    selectButton.addEventListener('click', () => {
+        // Trigger the file upload input
+        imageUpload.click();
+    });
+
+    // Add an event listener to the file upload input
+    imageUpload.addEventListener('change', () => {
+        // Read the contents of the uploaded file and display the preview
+        const file = imageUpload.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+            const previewImage = document.createElement('img');
+            previewImage.src = reader.result;
+            previewContainer.innerHTML = '';
+            previewContainer.appendChild(previewImage);
+            // Set the image data in the hidden input field
+            imageDataInput.value = reader.result;
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+</body>
+</html>
